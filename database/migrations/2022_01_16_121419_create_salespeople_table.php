@@ -17,7 +17,7 @@ class CreateSalespeopleTable extends Migration
             $table->id();
             $table->string('name',100);
             $table->string('email',100);
-            $table->float('commission',8,2)->default(5);
+            $table->float('commission',8,2)->default(8.5);
             $table->timestamps();
         });
     }
