@@ -1,16 +1,20 @@
 <template>
   <div class="container">
+    <hr>
     <h1>Cadastrar nova venda</h1>
     <form class="form" @submit.prevent="onSubmit">
       <div class="alert alert-danger mb-2 mt-2" role="alert" v-if="alert.message">{{ alert.message}}</div>
       <div class="alert alert-success mb-2 mt-2" role="alert" v-if="success.message">{{ success.message}}</div>
       <div class="form-group">
-        <input
-          type="text"
-          v-model="data.salespeople_id"
-          class="form-control"
-          placeholder="ID vendedor"
-        />
+        <select class="form-control" @change="changeSelect">
+          <option value="">Selecione um vendedor</option>
+          <option 
+            v-for="salesperson in salespeople"
+            :key="salesperson.id"
+            :value="salesperson.id"
+          >{{salesperson.name}}
+          </option>
+        </select>
       </div>
       <div class="form-group">
         <input
@@ -36,11 +40,12 @@ export default {
   data() {
     return {
       data: {
-        salespeople_id: "",
+        salespeople_id: 0,
         value: "",
       },
       alert:{message:""},
-      success:{message:""}
+      success:{message:""},
+      salespeople:{},
     };
   },
   methods: {
@@ -50,19 +55,16 @@ export default {
         axios
           .post(url,this.data)
           .then((res)=>{
-            console.log(res)
             this.success.message="Venda registrada com sucesso, ID: "+res.data.sale_id
           })
           .catch((error)=>{
-            console.log("erro")
-            console.log(error.response)
             this.alert.message = error.response.data.error
           })
       }
     },
     validation(){
-      if(!this.data.salespeople_id){
-        this.alert.message = "Favor preencher o ID do vendedor"
+      if(this.data.salespeople_id == 0){
+        this.alert.message = "Favor selecionar um vendedor"
         return false
       }
       if(!this.data.value){
@@ -71,8 +73,20 @@ export default {
       }
        this.alert.message=""
        return true
+    },
+    getSalepeople(){
+      const url = "http://localhost:8000/api/salesperson"
+          axios(url).then((res)=>{
+              this.salespeople = res.data
+          })
+    },
+    changeSelect(variable){
+      this.data.salespeople_id = variable.target.value
     }
   },
+  mounted(){
+      this.getSalepeople();
+  }
 };
 </script>
 

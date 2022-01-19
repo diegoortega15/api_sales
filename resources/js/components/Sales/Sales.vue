@@ -1,15 +1,30 @@
 <template>
   <div class="container mt-5">
-    <div class="row">
-      <div class="col">
-          <router-link :to="{ name: 'addvendas' }" class="btn btn-success">Cadastrar</router-link>
-      </div>
-      <!-- <div class="col">
-          <search @searchSalesperson="searchSalesperson"></search>
-      </div> -->
-    </div>
     <hr>
-    <h1>Listagem das Vendas</h1>
+    <div class="row">
+      <div class="col-5">
+        <h1>Listagem das Vendas</h1> 
+      </div>
+      <div class="col-5">
+        <div class="input-group">
+          <select class="custom-select" id="inputGroupSelect04" @change="changeSelect">
+            <option value="0" selected>Todos</option>
+            <option 
+              v-for="salesperson in salespeople"
+              :key="salesperson.id"
+              :value="salesperson.id"
+            >{{salesperson.name}}
+            </option>
+          </select>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" @click="search">Buscar</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-2">
+          <router-link :to="{ name: 'addvendas' }" class="btn btn-success">Nova venda</router-link>
+      </div>
+    </div>
     <table class="table">
       <thead class="thead-light">
         <tr>
@@ -24,7 +39,6 @@
         </tr>
       </thead>
       <tbody>
-
         <tr v-for="(sales, index) in data" :key="index">
           <td>{{ sales.id }}</td>
           <td>{{ sales.salespeople.id }}</td>
@@ -47,19 +61,41 @@ export default {
   data() {
     return {
       data: {},
+      dataSales:{},
+      salespeople:{},
+      selectedSalespeopleID:0
     };
   },
   methods:{
       getDatas(){
           const url = "http://localhost:8000/api/sale"
           axios(url).then((res)=>{
-              console.log(res.data);
               this.data = res.data
+              this.dataSales = res.data
           })
-      }
+      },
+      getSalepeople(){
+      const url = "http://localhost:8000/api/salesperson"
+          axios(url).then((res)=>{
+              this.salespeople = res.data
+          })
+      },
+      search(){
+        if(this.selectedSalespeopleID > 0){
+          this.data = this.dataSales.filter((sale) => {
+                        return sale.salespeople_id == this.selectedSalespeopleID
+                  })
+        }else{
+          this.data = this.dataSales
+        }
+      },
+      changeSelect(variable){
+        this.selectedSalespeopleID = variable.target.value
+      },
   },
   mounted(){
-      this.getDatas();
+      this.getDatas()
+      this.getSalepeople()
   }
 }
 

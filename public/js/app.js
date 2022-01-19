@@ -2155,12 +2155,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
       data: {
-        salespeople_id: "",
+        salespeople_id: 0,
         value: ""
       },
       alert: {
@@ -2168,7 +2172,8 @@ __webpack_require__.r(__webpack_exports__);
       },
       success: {
         message: ""
-      }
+      },
+      salespeople: {}
     };
   },
   methods: {
@@ -2178,18 +2183,15 @@ __webpack_require__.r(__webpack_exports__);
       if (this.validation()) {
         var url = "http://localhost:8000/api/sale";
         axios__WEBPACK_IMPORTED_MODULE_0___default().post(url, this.data).then(function (res) {
-          console.log(res);
           _this.success.message = "Venda registrada com sucesso, ID: " + res.data.sale_id;
         })["catch"](function (error) {
-          console.log("erro");
-          console.log(error.response);
           _this.alert.message = error.response.data.error;
         });
       }
     },
     validation: function validation() {
-      if (!this.data.salespeople_id) {
-        this.alert.message = "Favor preencher o ID do vendedor";
+      if (this.data.salespeople_id == 0) {
+        this.alert.message = "Favor selecionar um vendedor";
         return false;
       }
 
@@ -2200,7 +2202,21 @@ __webpack_require__.r(__webpack_exports__);
 
       this.alert.message = "";
       return true;
+    },
+    getSalepeople: function getSalepeople() {
+      var _this2 = this;
+
+      var url = "http://localhost:8000/api/salesperson";
+      axios__WEBPACK_IMPORTED_MODULE_0___default()(url).then(function (res) {
+        _this2.salespeople = res.data;
+      });
+    },
+    changeSelect: function changeSelect(variable) {
+      this.data.salespeople_id = variable.target.value;
     }
+  },
+  mounted: function mounted() {
+    this.getSalepeople();
   }
 });
 
@@ -2261,11 +2277,28 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
-      data: {}
+      data: {},
+      dataSales: {},
+      salespeople: {},
+      selectedSalespeopleID: 0
     };
   },
   methods: {
@@ -2274,13 +2307,36 @@ __webpack_require__.r(__webpack_exports__);
 
       var url = "http://localhost:8000/api/sale";
       axios__WEBPACK_IMPORTED_MODULE_0___default()(url).then(function (res) {
-        console.log(res.data);
         _this.data = res.data;
+        _this.dataSales = res.data;
       });
+    },
+    getSalepeople: function getSalepeople() {
+      var _this2 = this;
+
+      var url = "http://localhost:8000/api/salesperson";
+      axios__WEBPACK_IMPORTED_MODULE_0___default()(url).then(function (res) {
+        _this2.salespeople = res.data;
+      });
+    },
+    search: function search() {
+      var _this3 = this;
+
+      if (this.selectedSalespeopleID > 0) {
+        this.data = this.dataSales.filter(function (sale) {
+          return sale.salespeople_id == _this3.selectedSalespeopleID;
+        });
+      } else {
+        this.data = this.dataSales;
+      }
+    },
+    changeSelect: function changeSelect(variable) {
+      this.selectedSalespeopleID = variable.target.value;
     }
   },
   mounted: function mounted() {
     this.getDatas();
+    this.getSalepeople();
   }
 });
 
@@ -2299,6 +2355,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+//
 //
 //
 //
@@ -2352,7 +2409,6 @@ __webpack_require__.r(__webpack_exports__);
       if (this.validation()) {
         var url = "http://localhost:8000/api/salesperson";
         axios__WEBPACK_IMPORTED_MODULE_0___default().post(url, this.data).then(function (res) {
-          console.log(res);
           _this.success.message = "Vendedor registrado com sucesso, ID: " + res.data[0].id;
         })["catch"](function (error) {
           _this.alert.message = error.response.data.errors;
@@ -2425,11 +2481,27 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
-      data: {}
+      data: {},
+      dataSalespeople: {},
+      selectedSalespeopleID: 0
     };
   },
   methods: {
@@ -2438,9 +2510,23 @@ __webpack_require__.r(__webpack_exports__);
 
       var url = "http://localhost:8000/api/salesperson";
       axios__WEBPACK_IMPORTED_MODULE_0___default()(url).then(function (res) {
-        console.log(res.data);
         _this.data = res.data;
+        _this.dataSalespeople = res.data;
       });
+    },
+    changeSelect: function changeSelect(variable) {
+      this.selectedSalespeopleID = variable.target.value;
+    },
+    search: function search() {
+      var _this2 = this;
+
+      if (this.selectedSalespeopleID > 0) {
+        this.data = this.dataSalespeople.filter(function (salespeople) {
+          return salespeople.id == _this2.selectedSalespeopleID;
+        });
+      } else {
+        this.data = this.dataSalespeople;
+      }
     }
   },
   mounted: function mounted() {
@@ -38448,6 +38534,8 @@ var render = function () {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
+    _c("hr"),
+    _vm._v(" "),
     _c("h1", [_vm._v("Cadastrar nova venda")]),
     _vm._v(" "),
     _c(
@@ -38485,27 +38573,24 @@ var render = function () {
           : _vm._e(),
         _vm._v(" "),
         _c("div", { staticClass: "form-group" }, [
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.data.salespeople_id,
-                expression: "data.salespeople_id",
-              },
+          _c(
+            "select",
+            { staticClass: "form-control", on: { change: _vm.changeSelect } },
+            [
+              _c("option", { attrs: { value: "" } }, [
+                _vm._v("Selecione um vendedor"),
+              ]),
+              _vm._v(" "),
+              _vm._l(_vm.salespeople, function (salesperson) {
+                return _c(
+                  "option",
+                  { key: salesperson.id, domProps: { value: salesperson.id } },
+                  [_vm._v(_vm._s(salesperson.name) + "\n        ")]
+                )
+              }),
             ],
-            staticClass: "form-control",
-            attrs: { type: "text", placeholder: "ID vendedor" },
-            domProps: { value: _vm.data.salespeople_id },
-            on: {
-              input: function ($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.$set(_vm.data, "salespeople_id", $event.target.value)
-              },
-            },
-          }),
+            2
+          ),
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "form-group" }, [
@@ -38585,10 +38670,53 @@ var render = function () {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container mt-5" }, [
+    _c("hr"),
+    _vm._v(" "),
     _c("div", { staticClass: "row" }, [
+      _vm._m(0),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-5" }, [
+        _c("div", { staticClass: "input-group" }, [
+          _c(
+            "select",
+            {
+              staticClass: "custom-select",
+              attrs: { id: "inputGroupSelect04" },
+              on: { change: _vm.changeSelect },
+            },
+            [
+              _c("option", { attrs: { value: "0", selected: "" } }, [
+                _vm._v("Todos"),
+              ]),
+              _vm._v(" "),
+              _vm._l(_vm.salespeople, function (salesperson) {
+                return _c(
+                  "option",
+                  { key: salesperson.id, domProps: { value: salesperson.id } },
+                  [_vm._v(_vm._s(salesperson.name) + "\n          ")]
+                )
+              }),
+            ],
+            2
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group-append" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-secondary",
+                attrs: { type: "button" },
+                on: { click: _vm.search },
+              },
+              [_vm._v("Buscar")]
+            ),
+          ]),
+        ]),
+      ]),
+      _vm._v(" "),
       _c(
         "div",
-        { staticClass: "col" },
+        { staticClass: "col-2" },
         [
           _c(
             "router-link",
@@ -38596,19 +38724,15 @@ var render = function () {
               staticClass: "btn btn-success",
               attrs: { to: { name: "addvendas" } },
             },
-            [_vm._v("Cadastrar")]
+            [_vm._v("Nova venda")]
           ),
         ],
         1
       ),
     ]),
     _vm._v(" "),
-    _c("hr"),
-    _vm._v(" "),
-    _c("h1", [_vm._v("Listagem das Vendas")]),
-    _vm._v(" "),
     _c("table", { staticClass: "table" }, [
-      _vm._m(0),
+      _vm._m(1),
       _vm._v(" "),
       _c(
         "tbody",
@@ -38643,6 +38767,14 @@ var render = function () {
   ])
 }
 var staticRenderFns = [
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-5" }, [
+      _c("h1", [_vm._v("Listagem das Vendas")]),
+    ])
+  },
   function () {
     var _vm = this
     var _h = _vm.$createElement
@@ -38691,6 +38823,8 @@ var render = function () {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
+    _c("hr"),
+    _vm._v(" "),
     _c("h1", [_vm._v("Cadastrar novo vendedor")]),
     _vm._v(" "),
     _c(
@@ -38824,10 +38958,53 @@ var render = function () {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container mt-5" }, [
+    _c("hr"),
+    _vm._v(" "),
     _c("div", { staticClass: "row" }, [
+      _vm._m(0),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-5" }, [
+        _c("div", { staticClass: "input-group" }, [
+          _c(
+            "select",
+            {
+              staticClass: "custom-select",
+              attrs: { id: "inputGroupSelect04" },
+              on: { change: _vm.changeSelect },
+            },
+            [
+              _c("option", { attrs: { value: "0", selected: "" } }, [
+                _vm._v("Todos"),
+              ]),
+              _vm._v(" "),
+              _vm._l(_vm.dataSalespeople, function (salesperson) {
+                return _c(
+                  "option",
+                  { key: salesperson.id, domProps: { value: salesperson.id } },
+                  [_vm._v(_vm._s(salesperson.name) + "\n          ")]
+                )
+              }),
+            ],
+            2
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group-append" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-secondary",
+                attrs: { type: "button" },
+                on: { click: _vm.search },
+              },
+              [_vm._v("Buscar")]
+            ),
+          ]),
+        ]),
+      ]),
+      _vm._v(" "),
       _c(
         "div",
-        { staticClass: "col" },
+        { staticClass: "col-2" },
         [
           _c(
             "router-link",
@@ -38835,19 +39012,15 @@ var render = function () {
               staticClass: "btn btn-success",
               attrs: { to: { name: "addvendedor" } },
             },
-            [_vm._v("Cadastrar")]
+            [_vm._v("Novo vendedor")]
           ),
         ],
         1
       ),
     ]),
     _vm._v(" "),
-    _c("hr"),
-    _vm._v(" "),
-    _c("h1", [_vm._v("Listagem dos Vendedores")]),
-    _vm._v(" "),
     _c("table", { staticClass: "table" }, [
-      _vm._m(0),
+      _vm._m(1),
       _vm._v(" "),
       _c(
         "tbody",
@@ -38868,6 +39041,14 @@ var render = function () {
   ])
 }
 var staticRenderFns = [
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-5" }, [
+      _c("h1", [_vm._v("Listagem dos Vendedores")]),
+    ])
+  },
   function () {
     var _vm = this
     var _h = _vm.$createElement

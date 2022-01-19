@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <hr>
     <h1>Cadastrar novo vendedor</h1>
     <form class="form" @submit.prevent="onSubmit">
       <div class="alert alert-danger mb-2 mt-2" role="alert" v-if="alert.message">{{ alert.message}}</div>
@@ -49,7 +50,6 @@ export default {
         axios
           .post(url,this.data)
           .then((res)=>{
-            console.log(res)
             this.success.message="Vendedor registrado com sucesso, ID: "+res.data[0].id
           })
           .catch((error)=>{
